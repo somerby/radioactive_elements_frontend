@@ -17,7 +17,7 @@ const BreadCrumbs: FC<BreadCrumbsProps> = (props) => {
   const { crumbs } = props;
 
   return (
-    <ul className="breadcrumbs">
+    <ul className="breadcrumbs breadcrumbsText">
       <li>
         <Link to={ROUTES.MAIN}>Главная</Link>
       </li>

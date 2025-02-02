@@ -67,3 +67,23 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+@font-face {
+  font-family: 'Oswald';
+  src: url('./assets/fonts/oswald.ttf') format('truetype');
+  font-weight: normal !important;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Georgia';
+  src: url('./assets/fonts/georgia.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.customButton {
+  font-family: 'Oswald', sans-serif !important;
+  font-size: 1.15rem !important;
+  letter-spacing: 0.015rem !important;
+}

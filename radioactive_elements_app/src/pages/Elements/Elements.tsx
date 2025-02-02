@@ -6,24 +6,30 @@ import "./Elements.css"
 import { ROUTE_LABELS } from '../../Routes';
 import BreadCrumbs from '../../components/BreadCrumbs/BreadCrumbs';
 import InputField from '../../components/InputField/InputField';
+import { useDispatch } from 'react-redux';
+import { setAtomicMassAction, useAtomicMass } from '../../slices/dataSlice';
+import mockElements from '../../modules/Mock';
 
 const ElementsPage: FC = () => {
-    const [atomicMass, setAtomicMass] = useState('')
+    const dispatch = useDispatch()
+    const atomicMass = useAtomicMass()
     const [elements, setElements] = useState<ElementInf[]>([])
     const [loading, setLoading] = useState(false)
 
-    const elementSearch = async () =>{
+    const loadContent = async () =>{
         setLoading(true)
         getElementsWithSearch(atomicMass).then((response) => {
                 setElements(response.elements)
                 setLoading(false)
-            }).finally(() => {
+            }).catch(() => {
+                setElements(mockElements.elements.filter((el) => el.atomic_mass.toString().includes(atomicMass.toString())))
                 setLoading(false)
             })
+        dispatch(setAtomicMassAction(atomicMass))
     }
 
     useEffect(() => {
-        elementSearch()
+        loadContent()
     }, [])
 
     return (
@@ -34,10 +40,10 @@ const ElementsPage: FC = () => {
                     <div className='inputField'>
                         <InputField
                             value={atomicMass}
-                            setValue={(value: string) => setAtomicMass(value)}
+                            setValue={(value: string) => dispatch(setAtomicMassAction(value))}
                             placeholder='Введите атомную массу'
                             buttonText='Найти'
-                            onSubmit={elementSearch}
+                            onSubmit={loadContent}
                         />
                     </div>
                 </Col>

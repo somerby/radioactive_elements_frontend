@@ -5,18 +5,21 @@ import { useParams } from 'react-router-dom';
 import { getElementWithId } from '../../modules/Api';
 import BreadCrumbs from '../../components/BreadCrumbs/BreadCrumbs';
 import { ROUTE_LABELS, ROUTES } from '../../Routes';
-import defaultImg from '../../assets/default.jpg'
+import defaultImg from '/default.jpg'
 import './Element.css'
+import mockElements from '../../modules/Mock';
+
+const defaultElement: ElementInf = {element_id: 0, 
+                    name: '',
+                    description: '',
+                    status: '',
+                    img_url: '',
+                    period_time_text: '',
+                    period_time: 0,
+                    atomic_mass: 0}
 
 const ElementPage: FC = () => {
-    const [elementContent, setElementContent] = useState<ElementInf>({element_id: 0, 
-                                                                      name: '',
-                                                                      description: '',
-                                                                      status: '',
-                                                                      img_url: '',
-                                                                      period_time_text: '',
-                                                                      period_time: 0,
-                                                                      atomic_mass: 0});
+    const [elementContent, setElementContent] = useState<ElementInf>(defaultElement);
     const [loading, setLoading] = useState(false)
     const {elementId} = useParams();
 
@@ -26,7 +29,8 @@ const ElementPage: FC = () => {
         getElementWithId(elementId).then((response) => {
                 setElementContent(response)
                 setLoading(false)
-            }).finally(() => {
+            }).catch(() => {
+                setElementContent(mockElements.elements.find((el) => el.element_id.toString() === elementId) || defaultElement)
                 setLoading(false)
             })
     }
@@ -42,15 +46,20 @@ const ElementPage: FC = () => {
             {loading ? (
                 <Spinner animation="border" variant="dark" />
             ) : (
-                <Row>
-                    <Col md={4} xs={4}>
-                        <Image src={elementContent?.img_url || defaultImg} fluid/>
-                    </Col>
-                    <Col md={8}>
-                        <h1>{elementContent?.name}</h1>
-                        <p dangerouslySetInnerHTML={{__html: elementContent?.description}}/>
-                    </Col>
-                </Row>
+                <>
+                    <Row>
+                        <Col md={4} xs={3}>
+                            <Image src={elementContent?.img_url || defaultImg} fluid/>
+                        </Col>
+                        <Col md={8} xs={9}>
+                            <h1 className='elementName'>{elementContent?.name}</h1>
+                            <p className='elementPeriodTime' dangerouslySetInnerHTML={{__html: elementContent?.period_time_text}}/>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <p className='elementDescription' dangerouslySetInnerHTML={{__html: elementContent?.description}}/>
+                    </Row>
+                </>
             )}
         </Container>
     )

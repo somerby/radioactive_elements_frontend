@@ -1,6 +1,6 @@
 import { Container, Nav, Navbar, Image } from 'react-bootstrap';
 import { ROUTES } from '../../Routes';
-import radioactive_logo from '../../assets/radioactive_logo.png'
+import radioactive_logo from '/radioactive_logo_white.png'
 import { FC } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -8,7 +8,7 @@ import './NavigationBar.css'
 
 const NavigationBar: FC = () => {
   return (
-    <Navbar fixed="top" bg="dark" expand="lg" variant='dark'>
+    <Navbar fixed="top" bg="dark" expand="lg" variant='dark' className='navBar'>
       <Container>
         <Link to={ROUTES.MAIN} className="navbar-brand navbar-text-white">
             <Image src={radioactive_logo} width={30} className='navbarImg'/>
@@ -17,7 +17,7 @@ const NavigationBar: FC = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <NavLink to={ROUTES.ELEMENTS} className="nav-link navbar-text-white">
+            <NavLink to={ROUTES.ELEMENTS} className="nav-link navbar-text-white navLink">
               Радиоактивные элементы
             </NavLink>
           </Nav>

@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { InputGroup, Button, Form } from "react-bootstrap";
+import "./InputField.css"
 
 interface InputFieldProps {
     value: string,
@@ -13,6 +14,7 @@ const InputField: FC<InputFieldProps> = ({value, setValue, placeholder, buttonTe
     return (
         <InputGroup className="mb-3">
             <Form.Control
+                className="inputText"
                 placeholder={placeholder}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
@@ -22,7 +24,7 @@ const InputField: FC<InputFieldProps> = ({value, setValue, placeholder, buttonTe
                     }
                 }}
             />
-            <Button variant="dark" onClick={() => onSubmit()}>
+            <Button className="customButton" variant="dark" onClick={() => onSubmit()}>
                 {buttonText}
             </Button>
         </InputGroup>

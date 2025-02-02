@@ -1,4 +1,12 @@
-.rootContainer {
-    padding-top: 75px;
-    padding-bottom: 30px;
+.elementDescription {
+    font-family: 'Georgia', sans-serif;
+    padding-top: 20px;
+}
+
+.elementPeriodTime {
+    font-family: 'Georgia', sans-serif;
+}
+
+.elementName {
+    font-family: 'Oswald', sans-serif;
 }

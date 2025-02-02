@@ -8,6 +8,7 @@
     display: flex;
     gap: 10px;
     padding: 10px;
+    margin-bottom: 5px;
   }
   
   .breadcrumbs * {
@@ -26,4 +27,9 @@
   
   .breadcrumbs li:last-child {
     color: var(--active_color);
+  }
+
+  .breadcrumbsText {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.2rem;
   }
