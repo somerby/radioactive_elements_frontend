@@ -24,7 +24,12 @@ export interface ElementsResponse {
 export const getElementsWithSearch = async (atomic_mass = ''): Promise<ElementsResponse> =>{
     return fetch(`/api/elements?atomic_mass=${atomic_mass}`)
     .then((response) => response.json())
-    .catch(() => mockElements)
+    .catch(() => ({
+        ...mockElements,
+        elements: mockElements.elements.filter((el) => 
+            el.atomic_mass.toString().includes(atomic_mass.toString())
+        )
+    }))
 }
 
 export const getElementWithId = async (element_id: number | string): Promise<ElementInf> => {
