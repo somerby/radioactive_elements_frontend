@@ -12,3 +12,10 @@ createRoot(document.getElementById('root')!).render(
     </Provider>
   </StrictMode>,
 )
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker
+      .register("/radioactive_elements_frontend/serviceWorker.js")
+  })
+}

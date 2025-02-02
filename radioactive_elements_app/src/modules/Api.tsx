@@ -1,5 +1,3 @@
-import mockElements from "./Mock"
-
 export interface ElementInf {
     element_id: number,
     name: string,
