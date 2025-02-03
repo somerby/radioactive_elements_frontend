@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from 'react'
-import { Row, Col, Spinner, Container, Image } from 'react-bootstrap';
+import { Row, Col, Spinner, Container } from 'react-bootstrap';
 import { ElementInf, getElementsWithSearch } from '../../modules/Api';
 import ElementCard from '../../components/ElementCard/ElementCard';
 import "./Elements.css"
