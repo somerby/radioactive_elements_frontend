@@ -1,13 +1,13 @@
 .tableStyle {
     font-family: 'Oswald', sans-serif;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .filtersDate {
     width: 130px;
     margin-right: 10px;
     margin-left: 5px;
-    font-size: 1.25rem;
+    font-size: 1.15rem;
 }
 
 .filtersText {
@@ -16,15 +16,15 @@
 }
 
 .dropdown-item {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
 }
 
 .filtersToggleButton {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     width: 147px !important;
 }
 
 .filtersButton {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     margin-left: 10px;
 }
