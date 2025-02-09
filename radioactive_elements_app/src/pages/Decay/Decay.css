@@ -1,0 +1,19 @@
+.decayText {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.01rem;
+}
+
+.passTimeField {
+    max-width: 500px;
+    margin: auto;
+}
+
+.formLabel {
+    padding-right: 10px;
+    font-size: 1.2rem;
+}
+
+.inGroup {
+    margin-right: 1rem;
+}

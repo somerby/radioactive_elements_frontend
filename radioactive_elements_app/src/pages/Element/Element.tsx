@@ -1,38 +1,23 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect } from 'react'
 import { Col, Container, Row, Image, Spinner} from "react-bootstrap";
-import { ElementInf } from '../../modules/Api';
 import { useParams } from 'react-router-dom';
-import { getElementWithId } from '../../modules/Api';
+import { getElementWithId } from '../../slices/elementSlice';
 import BreadCrumbs from '../../components/BreadCrumbs/BreadCrumbs';
 import { ROUTE_LABELS, ROUTES } from '../../Routes';
 import defaultImg from '/default.jpg'
 import './Element.css'
-import mockElements from '../../modules/Mock';
-
-const defaultElement: ElementInf = {element_id: 0, 
-                    name: '',
-                    description: '',
-                    status: '',
-                    img_url: '',
-                    period_time_text: '',
-                    period_time: 0,
-                    atomic_mass: 0}
+import { useElement, useElementLoading } from '../../slices/elementSlice';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../store';
 
 const ElementPage: FC = () => {
-    const [elementContent, setElementContent] = useState<ElementInf>(defaultElement);
-    const [loading, setLoading] = useState(false)
+    const dispatch = useDispatch<AppDispatch>()
+    const elementContent = useElement()
+    const loading = useElementLoading()
     const {elementId} = useParams();
 
     const loadContent = async () => {
-        if (!elementId) return;
-        setLoading(true)
-        getElementWithId(elementId).then((response) => {
-                setElementContent(response)
-                setLoading(false)
-            }).catch(() => {
-                setElementContent(mockElements.elements.find((el) => el.element_id.toString() === elementId) || defaultElement)
-                setLoading(false)
-            })
+        await dispatch(getElementWithId(elementId!))
     }
 
     useEffect(() => {
@@ -44,7 +29,9 @@ const ElementPage: FC = () => {
             <BreadCrumbs crumbs={[{label: ROUTE_LABELS.ELEMENTS, path: ROUTES.ELEMENTS}, {label: elementContent?.name}]}/>
 
             {loading ? (
-                <Spinner animation="border" variant="dark" />
+                <div  className='d-flex justify-content-center align-items-center'>
+                    <Spinner animation="border" variant="dark" />
+                </div>
             ) : (
                 <>
                     <Row>

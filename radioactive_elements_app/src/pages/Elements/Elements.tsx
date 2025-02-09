@@ -1,36 +1,37 @@
-import { FC, useState, useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import { Row, Col, Spinner, Container } from 'react-bootstrap';
-import { ElementInf, getElementsWithSearch } from '../../modules/Api';
 import ElementCard from '../../components/ElementCard/ElementCard';
 import "./Elements.css"
-import { ROUTE_LABELS } from '../../Routes';
+import { ROUTE_LABELS, ROUTES } from '../../Routes';
 import BreadCrumbs from '../../components/BreadCrumbs/BreadCrumbs';
 import InputField from '../../components/InputField/InputField';
 import { useDispatch } from 'react-redux';
-import { setAtomicMassAction, useAtomicMass } from '../../slices/dataSlice';
-import mockElements from '../../modules/Mock';
+import { setAtomicMassAction, useAtomicMass, useElements, useElementsLoading } from '../../slices/elementsSlice';
+import { getElementsWithSearch } from '../../slices/elementsSlice';
+import { AppDispatch } from '../../store';
+import { useDecayInf, useIsAuthenticated } from '../../slices/userSlice';
+import decayLogo from '/quote.jpg'
+import { Link } from 'react-router-dom';
 
 const ElementsPage: FC = () => {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
     const atomicMass = useAtomicMass()
-    const [elements, setElements] = useState<ElementInf[]>([])
-    const [loading, setLoading] = useState(false)
+    const elements = useElements()
+    const loading = useElementsLoading()
+    const isAuthenticated = useIsAuthenticated()
+    const decayInf = useDecayInf()
 
-    const loadContent = async () =>{
-        setLoading(true)
-        getElementsWithSearch(atomicMass).then((response) => {
-                setElements(response.elements)
-                setLoading(false)
-            }).catch(() => {
-                setElements(mockElements.elements.filter((el) => el.atomic_mass.toString().includes(atomicMass.toString())))
-                setLoading(false)
-            })
-        dispatch(setAtomicMassAction(atomicMass))
+    const handleSearch = () => {
+        dispatch(getElementsWithSearch())
     }
 
     useEffect(() => {
-        loadContent()
+        handleSearch()
     }, [])
+
+    useEffect(() => {
+        handleSearch()
+    }, [isAuthenticated])
 
     return (
         <Container className='w-100 rootContainer'>
@@ -43,17 +44,15 @@ const ElementsPage: FC = () => {
                             setValue={(value: string) => dispatch(setAtomicMassAction(value))}
                             placeholder='Введите атомную массу'
                             buttonText='Найти'
-                            onSubmit={loadContent}
+                            onSubmit={handleSearch}
                         />
                     </div>
                 </Col>
             </Row>
 
             {loading ? (
-                <Row>
-                    <Col lg = {3} md={6} xs={6}>
-                        <Spinner animation="border" variant="dark" />
-                    </Col>
+                <Row className='d-flex justify-content-center align-items-center'>
+                    <Spinner animation="border" variant="dark" />
                 </Row>
             ): (
                 <Row className="g-4">
@@ -64,6 +63,18 @@ const ElementsPage: FC = () => {
                     ))}
                 </Row>
             )}
+
+            {decayInf.decay_id && decayInf.decay_elements_count && isAuthenticated ? (
+                <>
+                    <Link to={`${ROUTES.DECAYS}/${decayInf.decay_id}`}>
+                        <img src={decayLogo} className='draftDecayLogo'/>
+                        <span className='draftDecayLogoCount d-flex justify-content-center align-items-center'>{decayInf.decay_elements_count}</span>
+                    </Link>
+                </>
+            ) : (
+                <img src={decayLogo} className='draftDecayLogo blackNWhiteLogo'/>
+            )}
+            
         </Container>
     )
 }

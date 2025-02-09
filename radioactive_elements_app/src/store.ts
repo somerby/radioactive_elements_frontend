@@ -1,9 +1,19 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import dataReducer from './slices/dataSlice'
+import elementsReducer from './slices/elementsSlice'
+import userReducer from './slices/userSlice'
+import elementReducer from './slices/elementSlice'
+import decayReducer from './slices/decaySlice'
+import decaysReducer from './slices/decaysSlice'
 
-const store = configureStore ({
+export const store = configureStore ({
     reducer: combineReducers({
-        ourData: dataReducer
+        elements: elementsReducer,
+        user: userReducer,
+        element: elementReducer,
+        decay: decayReducer,
+        decays: decaysReducer
     })
 })
-export default store
+
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch

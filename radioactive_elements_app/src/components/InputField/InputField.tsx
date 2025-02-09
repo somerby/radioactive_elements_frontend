@@ -14,7 +14,7 @@ const InputField: FC<InputFieldProps> = ({value, setValue, placeholder, buttonTe
     return (
         <InputGroup className="mb-3">
             <Form.Control
-                className="inputText"
+                className="inputText border-dark"
                 placeholder={placeholder}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}

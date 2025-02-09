@@ -7,3 +7,29 @@
     padding-top: 64px;
     padding-bottom: 30px;
 }
+
+.draftDecayLogo {
+    border-radius: 20%;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+}
+
+.blackNWhiteLogo {
+    filter: grayscale(100%)
+}
+
+.draftDecayLogoCount {
+    background-color: red;
+    position: fixed;
+    bottom: 62px;
+    right: 12px;
+    width: 30px;
+    height: 30px;
+    border-radius: 100%;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 1.4rem;
+    color: black
+}
