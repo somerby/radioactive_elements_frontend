@@ -87,3 +87,58 @@
 #dropdownMenu {
     background-color: #212529;
 }
+
+.decaysIcon {
+    width: 20px;
+}
+
+.status-icon {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.qr-hover-wrapper {
+    position: relative;
+}
+
+.qr-hover {
+    display: none;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) scale(1.5);
+    z-index: 9999;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 4px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 120px; /* Ширина QR-кода */
+}
+
+.qr-code {
+    width: 100%;
+    height: 100%;
+}
+
+.qr-hover-wrapper:hover .qr-hover {
+    display: block;
+}
+
+.qr-hover-wrapper:hover .qr-hover {
+    margin-top: 10px;
+}
+
+.qr-hover-wrapper:hover .qr-hover.top {
+    bottom: 100%;
+    margin-bottom: 10px;
+}
+
+.isBottom {
+    bottom: 200%
+}
+
+.isTop {
+    top: 200%
+}

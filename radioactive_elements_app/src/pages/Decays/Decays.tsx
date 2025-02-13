@@ -9,6 +9,9 @@ import { Link, useNavigate } from "react-router-dom"
 import "./Decays.css"
 import { useIsAuthenticated, useIsModerator } from "../../slices/userSlice"
 import { moderateDecay, rejectDecay } from "../../slices/decaysSlice"
+import time from '/time.svg'
+import reject from '/reject.svg'
+import href from '/href.svg'
 
 const DecaysPage: FC = () => {
     const dispatch = useDispatch<AppDispatch>()
@@ -135,6 +138,7 @@ const DecaysPage: FC = () => {
                                 </>
                             )}
                             <th>Статус</th>
+                            <th>QR</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -155,6 +159,20 @@ const DecaysPage: FC = () => {
                                     </>
                                 )}
                                 <td>{item.status}</td>
+                                <td>
+                                    {item.status === 'Завершен' && (
+                                        <>
+                                            <div className={index >= decays.length - 3 ? "qr-hover-wrapper isBottom" : "qr-hover-wrapper isTop"}>
+                                                <img src={href} className="decaysIcon status-icon" style={{cursor: 'pointer'}}/>
+                                                <div className={index >= decays.length - 3 ? "qr-hover isBottom" : "qr-hover isTop"}>
+                                                    {item.qr && <img className="qr-code" src={`data:image/png;base64,${item.qr}`} />}
+                                                </div>
+                                            </div>
+                                        </>
+                                        )}
+                                    {item.status === 'Отклонен' && <img src={reject} className="decaysIcon"/>}
+                                    {item.status === 'Сформирован' && <img src={time} className="decaysIcon"/>}
+                                </td>
                                 <td>
                                     {isModerator && item.status === 'Сформирован' ? (
                                         <Dropdown>

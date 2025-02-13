@@ -75,6 +75,11 @@ export interface Decay {
    * @maxLength 30
    */
   pass_time?: string | null;
+  /**
+   * Qr
+   * @minLength 1
+   */
+  qr?: string | null;
 }
 
 export interface Element {

@@ -12,6 +12,7 @@ interface decay {
     date_of_creation?: string;
     date_of_formation?: string | null;
     date_of_finish?: string | null;
+    qr?: string | null;
 }
 
 interface decaysState {
@@ -51,7 +52,7 @@ export const getDecays = createAsyncThunk(
     async (credentials: {start_date?: string, end_date?: string, status?: string}, { rejectWithValue }) => {
         try {
             const response = await api.decays.decaysList({start_date: credentials?.start_date, 
-                                                          end_date: credentials.end_date ? `${credentials?.end_date} 23:59:59` : undefined, 
+                                                          end_date: credentials.end_date ? `${credentials?.end_date} 23:59` : undefined, 
                                                           status: credentials?.status})
             return response.data
         } catch (error: any) {
