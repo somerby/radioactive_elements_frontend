@@ -1,21 +1,28 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { Col, Container, Row, Form, Button, Spinner } from "react-bootstrap";
 import BreadCrumbs from "../../components/BreadCrumbs/BreadCrumbs";
 import { ROUTE_LABELS, ROUTES } from "../../Routes";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store";
-import { userLogin, useUserLoading } from "../../slices/userSlice";
+import { useIsAuthenticated, userLogin, useUserLoading } from "../../slices/userSlice";
 import { useNavigate } from "react-router-dom";
 import './Login.css'
 
 const LoginPage: FC = () => {
     const dispatch = useDispatch<AppDispatch>()
+    const isAuthenticated = useIsAuthenticated()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [loginFailed, setLoginFailed] = useState(false)
     const loading = useUserLoading()
     const navigate = useNavigate()
     
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate(ROUTES.FORBIDDEN)
+        }
+    }, [])
+
     const handleSubmit = async () => {
         const result = await dispatch(userLogin({email: email, password: password}))
         if (result.type === 'user/userLogin/rejected') {

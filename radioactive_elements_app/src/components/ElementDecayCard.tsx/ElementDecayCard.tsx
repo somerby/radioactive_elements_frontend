@@ -4,9 +4,7 @@ import defaultImg from '/default.jpg'
 import './ElementDecayCard.css'
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { deleteElementFromDecay, setDecayElementQuantityAction, useDecayElements, useDecayStatus } from '../../slices/decaySlice';
-import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '../../Routes';
+import { deleteElementFromDecay, setDecayElementQuantityAction, useDecayStatus } from '../../slices/decaySlice';
 
 interface element {
     element_id?: number;
@@ -26,7 +24,6 @@ interface decayElement {
 export const ElementDecayCard: FC<decayElement> = (decayElement) => {
     const dispatch = useDispatch<AppDispatch>()
     const status = useDecayStatus()
-
     const handleDelete = async () => {
         await dispatch(deleteElementFromDecay({elementId: decayElement.element?.element_id!, decayId: decayElement.decay!}))
     }

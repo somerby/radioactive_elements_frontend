@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
-import { api } from "../api";
+import { api } from "../api/index";
 
 interface decayInf {
     decay_id: number,

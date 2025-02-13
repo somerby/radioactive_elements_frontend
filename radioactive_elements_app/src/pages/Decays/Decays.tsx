@@ -1,24 +1,46 @@
-import { FC, useEffect } from "react"
+import { FC, useEffect, useState } from "react"
 import { Button, Container, Form, Row, Spinner, Table, Dropdown } from "react-bootstrap"
-import { getDecays, resetFiltersAction, setFilterEndDateAction, setFilterStartDateAction, setFilterStatusAction, useDecays, useDecaysLoading, useEndDate, useStartDate, useStatus } from "../../slices/decaysSlice"
+import { getDecays, resetFiltersAction, setFilterEndDateAction, setFilterStartDateAction, setFilterStatusAction, useDecays, useDecaysLoading, useEndDate, useStartDate, useStatus, useDecaysEmail, setDecaysEmailAction } from "../../slices/decaysSlice"
 import BreadCrumbs from "../../components/BreadCrumbs/BreadCrumbs"
 import { ROUTES, ROUTE_LABELS } from "../../Routes"
 import { useDispatch } from "react-redux"
 import { AppDispatch } from "../../store"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import "./Decays.css"
+import { useIsAuthenticated, useIsModerator } from "../../slices/userSlice"
+import { moderateDecay, rejectDecay } from "../../slices/decaysSlice"
 
 const DecaysPage: FC = () => {
     const dispatch = useDispatch<AppDispatch>()
+    const isAuthenticated = useIsAuthenticated()
     const decays = useDecays()
     const startDate = useStartDate()
     const endDate = useEndDate()
     const status = useStatus()
-    const loading = useDecaysLoading()
+    const email = useDecaysEmail()
+    const isModerator = useIsModerator()
+    const navigate = useNavigate()
+    const [firstLoading, setFirstLoading] = useState(true)
 
     useEffect(() => {
-        dispatch(getDecays({}))
+        fetchDecays().then(() => {setFirstLoading(false)})
     }, [])
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate(ROUTES.FORBIDDEN)
+        }
+    }, [isAuthenticated])
+
+    useEffect(() => {
+        fetchDecays()
+        const id = setInterval(fetchDecays, 1000)
+        return () => clearInterval(id)
+    }, [status, startDate, endDate])
+
+    const fetchDecays = async () => {
+        await dispatch(getDecays({status: statusFormat(status), start_date: startDate, end_date: endDate}))
+    }
 
     const handleSelect = (eventKey: string | null) => {
         dispatch(setFilterStatusAction(eventKey))
@@ -26,7 +48,6 @@ const DecaysPage: FC = () => {
 
     const handleReset = () => {
         dispatch(resetFiltersAction())
-        dispatch(getDecays({}))
     }
 
     const statusFormat = (status: string) => {
@@ -39,48 +60,67 @@ const DecaysPage: FC = () => {
         return statusMap[status]
     };
 
-    const handleApply = () => {
-        console.log(startDate, endDate, status)
-        dispatch(getDecays({status: statusFormat(status), start_date: startDate, end_date: endDate}))
+    const handleFinish = (decayId: number) => {
+        dispatch(moderateDecay(decayId))
+    }
+
+    const handleReject = (decayId: number) => {
+        dispatch(rejectDecay(decayId))
+    }
+
+    const handleOpen = (decayId: number) => {
+        navigate(`${ROUTES.DECAYS}/${decayId}`)
     }
 
     return (
         <Container className="rootContainer w-100">
-            {loading ? (
+            {firstLoading ? (
                 <Row className='d-flex justify-content-center align-items-center'>
                     <Spinner animation="border" variant="dark" />
                 </Row>
             ) : (
                 <>
                 <BreadCrumbs crumbs={[{label: ROUTE_LABELS.DECAYS}]}/>
-                <div className="d-flex justify-content-center filtersText mb-4">
-                    <Form.Label className="my-auto">с</Form.Label>
-                    <Form.Control type="date" 
-                                  className="filtersDate border-dark"
-                                  value={startDate}
-                                  onChange={(e) => dispatch(setFilterStartDateAction(e.target.value))}/>
-                    <Form.Label className="my-auto">по</Form.Label>
-                    <Form.Control type="date" 
-                                  className="filtersDate border-dark"
-                                  value={endDate}
-                                  onChange={(e) => dispatch(setFilterEndDateAction(e.target.value))}/>
-                    
-                    <Dropdown onSelect={handleSelect}>
-                        <Dropdown.Toggle variant="outline-dark" className="filtersToggleButton">
-                            {status || 'Статус'}
-                        </Dropdown.Toggle>
-                        
-                        <Dropdown.Menu>
-                        <Dropdown.Item eventKey='' active={!status}>Статус</Dropdown.Item>
-                        <Dropdown.Divider />
-                            <Dropdown.Item eventKey="Завершен">Завершен</Dropdown.Item>
-                            <Dropdown.Item eventKey="Сформирован">Сформирован</Dropdown.Item>
-                            <Dropdown.Item eventKey="Отклонен">Отклонен</Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
-                    <Button variant="outline-success" className="filtersButton" onClick={handleApply}>Применить</Button>
-                    <Button variant="outline-danger" className="filtersButton" onClick={handleReset}>Сбросить</Button>
+                <div className={isModerator ? "d-flex flex-column flex-md-row justify-content-center filtersText" 
+                                            : "d-flex flex-column flex-md-row justify-content-center filtersText pb-3"}>
+                    <div className="d-flex flex-row justify-content-center">
+                        <Form.Label className="my-auto">с</Form.Label>
+                        <Form.Control type="date" 
+                                    className="filtersDate border-dark"
+                                    value={startDate}
+                                    onChange={(e) => dispatch(setFilterStartDateAction(e.target.value))}/>
+                        <Form.Label className="my-auto">по</Form.Label>
+                        <Form.Control type="date" 
+                                    className="filtersDate border-dark"
+                                    value={endDate}
+                                    onChange={(e) => dispatch(setFilterEndDateAction(e.target.value))}/>
+                    </div>
+                    <div className="d-flex flex-row justify-content-center mt-2 mt-md-0">
+                        <Dropdown onSelect={handleSelect}>
+                            <Dropdown.Toggle variant="outline-dark" className="filtersToggleButton">
+                                {status || 'Статус'}
+                            </Dropdown.Toggle>
+                            
+                            <Dropdown.Menu>
+                            <Dropdown.Item eventKey='' active={!status}>Статус</Dropdown.Item>
+                            <Dropdown.Divider />
+                                <Dropdown.Item eventKey="Завершен">Завершен</Dropdown.Item>
+                                <Dropdown.Item eventKey="Сформирован">Сформирован</Dropdown.Item>
+                                <Dropdown.Item eventKey="Отклонен">Отклонен</Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                        <Button variant="outline-danger" className="filtersButton" onClick={handleReset}>Сбросить</Button>
+                    </div>
                 </div>
+                {isModerator && (
+                    <div className="d-flex justify-content-center pb-3 mt-2">
+                        <Form.Label className="filtersText my-auto filtersEmailLabel">Создатель:</Form.Label>
+                        <Form.Control className="filtersEmail border-dark"
+                                        value={email}
+                                        onChange={(e) => dispatch(setDecaysEmailAction(e.target.value))}/>
+                    </div>
+                )}
+                <div className="w-100" style={{overflowX: 'auto'}}>
                 <Table className="tableStyle">
                     <thead>
                         <tr>
@@ -88,30 +128,55 @@ const DecaysPage: FC = () => {
                             <th>Дата создания</th>
                             <th>Дата формирования</th>
                             <th>Дата завершения</th>
+                            {isModerator && (
+                                <>
+                                <th>Создатель</th>
+                                <th>Модератор</th>
+                                </>
+                            )}
                             <th>Статус</th>
-                            <th>Открыть</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                    {decays.map((_, i) => {
-                        const item = decays[decays.length - 1 - i]
+                    {decays.filter((el) => el.creator?.toLowerCase().includes(email.toLowerCase()))
+                           .sort((a, b) => b.decay_id! - a.decay_id!)
+                           .map((item, index) => {
                         return (
-                            <tr key={i}>
+                            <tr key={index}>
                                 <td>{item.decay_id}</td>
                                 <td>{item.date_of_creation}</td>
                                 <td>{item.date_of_formation}</td>
                                 <td>{item.date_of_finish}</td>
+                                {isModerator && (
+                                    <>
+                                    <td>{item.creator}</td>
+                                    <td>{item.moderator}</td>
+                                    </>
+                                )}
                                 <td>{item.status}</td>
                                 <td>
-                                    <Link to={`${ROUTES.DECAYS}/${item.decay_id}`}>
-                                        <Button variant="dark" className="">Открыть</Button>
-                                    </Link>
+                                    {isModerator && item.status === 'Сформирован' ? (
+                                        <Dropdown>
+                                            <Dropdown.Toggle variant="dark">Действие</Dropdown.Toggle>
+                                            <Dropdown.Menu id="dropdownMenu">
+                                                <Dropdown.Item id="openAction" onClick={() => handleOpen(item.decay_id!)}>Открыть</Dropdown.Item>
+                                                <Dropdown.Item id="finishAction" onClick={() => handleFinish(item.decay_id!)}>Завершить</Dropdown.Item>
+                                                <Dropdown.Item id="rejectAction" onClick={() => handleReject(item.decay_id!)}>Отклонить</Dropdown.Item>
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    ) : (
+                                        <Link to={`${ROUTES.DECAYS}/${item.decay_id}`}>
+                                            <Button variant="dark" className="">Открыть</Button>
+                                        </Link>
+                                    )}
                                 </td>
                             </tr>
                         )
                     })}
                     </tbody>
                 </Table>
+                </div>
                 </>
             )}
         </Container>

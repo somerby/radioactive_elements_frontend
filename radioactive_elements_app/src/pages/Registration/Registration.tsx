@@ -1,15 +1,16 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { Col, Container, Row, Form, Button, Spinner } from "react-bootstrap";
 import BreadCrumbs from "../../components/BreadCrumbs/BreadCrumbs";
 import { ROUTE_LABELS, ROUTES } from "../../Routes";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store";
-import { userRegistration, useUserLoading } from "../../slices/userSlice";
+import { useIsAuthenticated, userRegistration, useUserLoading } from "../../slices/userSlice";
 import { useNavigate } from "react-router-dom";
 import './Registration.css'
 
 const RegistrationPage: FC = () => {
     const dispatch = useDispatch<AppDispatch>()
+    const isAuthenticated = useIsAuthenticated()
     const [email, setEmail] = useState('')
     const [password1, setPassword1] = useState('')
     const [password2, setPassword2] = useState('')
@@ -17,6 +18,12 @@ const RegistrationPage: FC = () => {
     const [passwordsMissmatch, setPasswordMissMatch] = useState(false)
     const navigate = useNavigate()
     
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate(ROUTES.FORBIDDEN)
+        }
+    }, [])
+
     const handleSubmit = async () => {
         if (password1 !== password2) {
             setPasswordMissMatch(true)

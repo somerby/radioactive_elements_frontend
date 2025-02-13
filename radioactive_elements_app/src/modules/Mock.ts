@@ -1,4 +1,23 @@
-import { ElementsResponse } from "./Api";
+interface ElementInf {
+    element_id: number,
+    name: string,
+    description: string,
+    status: string,
+    img_url: string,
+    period_time_text: string,
+    period_time: number,
+    atomic_mass: number
+}
+
+interface DecayInf {
+    decay_elements_count: number,
+    decay_id: number
+}
+
+interface ElementsResponse {
+    elements: ElementInf[],
+    decay_information: DecayInf
+}
 
 const mockElements: ElementsResponse = {
     elements: [

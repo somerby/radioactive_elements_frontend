@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
-import { api } from "../api";
+import { api } from "../api/index";
 
 interface elementForDecay {
     element_id?: number;
@@ -108,7 +108,7 @@ export const formDecay = createAsyncThunk(
           const response = await api.decay.decayFormingUpdate(decayId.toString())
           return response.data
       } catch (error: any) {
-        return rejectWithValue("Произошла ошибка")
+          return rejectWithValue("Произошла ошибка")
       }
   }
 )
@@ -126,7 +126,7 @@ const decaySlice = createSlice({
       },
       deleteElementFromDecay(state, {payload}) {
         state.decay.elements = state.decay.elements?.filter((el) => el.element?.element_id !== payload.elementId)
-      },
+      }
     },
     extraReducers: (builder) => {
         builder.addCase(getDecayInformation.pending, (state) => {
@@ -150,7 +150,7 @@ export const useDecayStatus = () => useSelector((state: RootState) => state.deca
 export const {
   setDecayPassTime: setDecayPassTimeAction,
   setDecayElementQuantity: setDecayElementQuantityAction,
-  deleteElementFromDecay: deleteElementFromDecayAction,
+  deleteElementFromDecay: deleteElementFromDecayAction
 } = decaySlice.actions
 
 export default decaySlice.reducer

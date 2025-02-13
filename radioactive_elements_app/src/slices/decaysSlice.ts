@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { api } from "../api";
+import { api } from "../api/index";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import { format, parseISO } from "date-fns";
@@ -19,6 +19,7 @@ interface decaysState {
     start_date: string,
     end_date: string,
     status: string,
+    email: string,
     loading: boolean
 }
 
@@ -27,6 +28,7 @@ const initialState: decaysState = {
     start_date: "",
     end_date: "",
     status: "",
+    email: "",
     loading: false
 }
 
@@ -48,12 +50,38 @@ export const getDecays = createAsyncThunk(
     'decays/getDecays',
     async (credentials: {start_date?: string, end_date?: string, status?: string}, { rejectWithValue }) => {
         try {
-            const response = await api.decays.decaysList({start_date: credentials?.start_date, end_date: credentials?.end_date, status: credentials?.status})
+            const response = await api.decays.decaysList({start_date: credentials?.start_date, 
+                                                          end_date: credentials.end_date ? `${credentials?.end_date} 23:59:59` : undefined, 
+                                                          status: credentials?.status})
             return response.data
         } catch (error: any) {
             return rejectWithValue("Произошла ошибка")
         }
     }
+)
+
+export const moderateDecay = createAsyncThunk(
+    'decays/moderateDecay',
+    async (decayId: number, {rejectWithValue}) => {
+        try {
+            const response = await api.decay.decayModerateUpdate(decayId.toString(), {accept: 'true'})
+            return response.data
+        } catch (error: any) {
+            return rejectWithValue("Произошла ошибка")
+        }
+    }
+)
+
+export const rejectDecay = createAsyncThunk(
+  'decays/rejectDecay',
+  async (decayId: number, {rejectWithValue}) => {
+      try {
+          const response = await api.decay.decayModerateUpdate(decayId.toString(), {accept: 'false'})
+          return response.data
+      } catch (error: any) {
+          return rejectWithValue("Произошла ошибка")
+      }
+  }
 )
 
 const decaysSlice = createSlice({
@@ -73,6 +101,10 @@ const decaysSlice = createSlice({
             state.status = ''
             state.end_date = ''
             state.start_date = ''
+            state.email = ''
+        },
+        setDecaysEmail(state, {payload}) {
+            state.email = payload
         }
     },
     extraReducers: (builder) => {
@@ -97,6 +129,32 @@ const decaysSlice = createSlice({
         }),
         builder.addCase(getDecays.rejected, (state) => {
             state.loading = false
+        }),
+        builder.addCase(moderateDecay.pending, (state) => {
+            state.loading = true
+        }),
+        builder.addCase(moderateDecay.fulfilled, (state, {payload}) => {
+            const element = state.decays.find((el) => el.decay_id === payload.decay_id)
+            element!.status = statusFormat(payload.status!)
+            element!.date_of_finish = dateFormat(payload.date_of_finish!)
+            element!.moderator = payload.moderator
+            state.loading = false
+        }),
+        builder.addCase(moderateDecay.rejected, (state) => {
+            state.loading = false
+        }),
+        builder.addCase(rejectDecay.pending, (state) => {
+            state.loading = true
+        }),
+        builder.addCase(rejectDecay.fulfilled, (state, {payload}) => {
+            const element = state.decays.find((el) => el.decay_id === payload.decay_id)
+            element!.status = statusFormat(payload.status!)
+            element!.date_of_finish = dateFormat(payload.date_of_finish!)
+            element!.moderator = payload.moderator
+            state.loading = false
+        }),
+        builder.addCase(rejectDecay.rejected, (state) => {
+            state.loading = false
         })
     }
 })
@@ -106,12 +164,14 @@ export const useStartDate = () => useSelector((state: RootState) => state.decays
 export const useEndDate = () => useSelector((state: RootState) => state.decays.end_date)
 export const useStatus = () => useSelector((state: RootState) => state.decays.status)
 export const useDecaysLoading = () => useSelector((state: RootState) => state.decays.loading)
+export const useDecaysEmail = () => useSelector((state: RootState) => state.decays.email)
 
 export const {
     setFilterStartDate: setFilterStartDateAction,
     setFilterEndDate: setFilterEndDateAction,
     setFilterStatus: setFilterStatusAction,
-    resetFilters: resetFiltersAction
+    resetFilters: resetFiltersAction,
+    setDecaysEmail: setDecaysEmailAction
 } = decaysSlice.actions
 
 export default decaysSlice.reducer

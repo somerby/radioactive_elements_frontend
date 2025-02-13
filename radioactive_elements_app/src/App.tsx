@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import { ROUTES } from "./Routes";
 import {FC} from 'react'
 import MainPage from "./pages/main/Main";
@@ -9,12 +9,20 @@ import RegistrationPage from "./pages/Registration/Registration";
 import AccountPage from "./pages/Account/Account";
 import DecayPage from "./pages/Decay/Decay";
 import DecaysPage from "./pages/Decays/Decays"
+import ElementsTablePage from "./pages/ElementsTable/ElementsTable";
+import AddEditElementPage from "./pages/AddEditElement/AddEditElement";
 import NavigationBar from "./components/NavigationBar/NavigationBar"
+import ForbiddenPage from "./pages/Forbidden/Forbidden";
+import NotFoundPage from "./pages/NotFound/NotFound";
 import "./App.css"
+import { setupInterceptors } from "./api";
 
 const App: FC = () => {
+  const navigate = useNavigate()
+  setupInterceptors(navigate)
+
   return (
-    <BrowserRouter>
+    <div>
       <NavigationBar />
       <Routes>
         <Route path={ROUTES.MAIN} index element={<MainPage />} />
@@ -25,8 +33,12 @@ const App: FC = () => {
         <Route path={ROUTES.ACCOUNT} index element={<AccountPage />} />
         <Route path={ROUTES.DECAYS} index element={<DecaysPage/>}/>
         <Route path={`${ROUTES.DECAYS}/:decayId`} index element={<DecayPage />} />
+        <Route path={ROUTES.ELEMENTS_TABLE} index element={<ElementsTablePage />} />
+        <Route path={`${ROUTES.ADDEDITELEMENT}/:elementId?`} index element={<AddEditElementPage />} />
+        <Route path={ROUTES.FORBIDDEN} index element={<ForbiddenPage />} />
+        <Route path='*' index element={<NotFoundPage />} />
       </Routes>
-    </BrowserRouter>
+    </div>
   );
 }
 

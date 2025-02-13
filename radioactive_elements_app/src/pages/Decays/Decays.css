@@ -15,6 +15,16 @@
     font-size: 1.5rem;
 }
 
+.filtersEmail {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.15rem;
+    width: 250px;
+}
+
+.filtersEmailLabel {
+    margin-right: 5px;
+}
+
 .dropdown-item {
     font-size: 1.15rem;
 }
@@ -27,4 +37,53 @@
 .filtersButton {
     font-size: 1.15rem;
     margin-left: 10px;
+}
+
+#openAction {
+    font-size: 16px;
+    color: white;
+    background-color: #212529;
+    width: auto;
+}
+
+#openAction:hover {
+    opacity: 0.9;
+}
+
+#openAction:active {
+    opacity: 0.8;
+}
+
+#finishAction {
+    font-size: 16px;
+    color: white;
+    background-color: #198754;
+    width: auto;
+}
+
+#finishAction:hover {
+    opacity: 0.9;
+}
+
+#finishAction:active {
+    opacity: 0.8;
+}
+
+#rejectAction {
+    font-size: 16px;
+    color: white;
+    background-color: #dc3545;
+    width: auto;
+}
+
+#rejectAction:hover {
+    opacity: 0.9;
+}
+
+#rejectAction:active {
+    opacity: 0.8;
+}
+
+#dropdownMenu {
+    background-color: #212529;
 }

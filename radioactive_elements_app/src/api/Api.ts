@@ -411,7 +411,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     decayModerateUpdate: (
       decayId: string,
       data: {
-        accept: boolean;
+        accept: string;
       },
       params: RequestParams = {},
     ) =>

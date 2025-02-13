@@ -1,0 +1,31 @@
+.editDescription {
+    height: 300px;
+}
+
+.editFormLabel {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.2rem;
+}
+
+.editFormInput {
+    font-family: 'Georgia', sans-serif;
+}
+
+.editSubmitButton {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.2rem;
+}
+
+.editStatus {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem;
+}
+
+.editImg {
+    width: 200px;
+}
+
+.editFileInput {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem;
+}

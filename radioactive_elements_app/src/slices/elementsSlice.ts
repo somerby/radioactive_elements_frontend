@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
-import { api } from "../api";
+import { api } from "../api/index";
 import mockElements from "../modules/Mock";
 import { setDecayInfAction } from "./userSlice";
 
@@ -30,11 +30,10 @@ const initialState: elementsState = {
 
 export const getElementsWithSearch = createAsyncThunk(
     'elements/getElementsWithSearch',
-    async (_, { getState, dispatch, rejectWithValue }) => {
-        const state = getState() as RootState;
+    async (atomicMass:string, { dispatch, rejectWithValue }) => {
         try {
             const response = await api.elements.elementsList({
-                atomic_mass: state.elements.atomic_mass
+                atomic_mass: atomicMass!
             })
             dispatch(setDecayInfAction(response.data.decay_information))
             return response.data

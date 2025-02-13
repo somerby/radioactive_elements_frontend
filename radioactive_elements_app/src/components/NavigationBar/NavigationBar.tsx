@@ -7,13 +7,14 @@ import { Link } from 'react-router-dom';
 import './NavigationBar.css'
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { useEmail, useIsAuthenticated, userLogout } from '../../slices/userSlice';
+import { useEmail, useIsAuthenticated, useIsModerator, userLogout } from '../../slices/userSlice';
 import { setAtomicMassAction } from '../../slices/elementsSlice';
 import { resetFiltersAction } from '../../slices/decaysSlice';
 
 const NavigationBar: FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const isAuthenticated = useIsAuthenticated()
+  const isModerator = useIsModerator()
   const email = useEmail()
   const navigate = useNavigate()
 
@@ -21,7 +22,6 @@ const NavigationBar: FC = () => {
     dispatch(userLogout())
     dispatch(setAtomicMassAction(''))
     dispatch(resetFiltersAction())
-    navigate(ROUTES.ELEMENTS, {replace: true})
   }
 
   return (
@@ -40,6 +40,11 @@ const NavigationBar: FC = () => {
             {isAuthenticated && (
               <NavLink to={ROUTES.DECAYS} className="nav-link navbar-text-white navLink">
                 Распады
+              </NavLink>
+            )}
+            {isModerator && (
+              <NavLink to={ROUTES.ELEMENTS_TABLE} className="nav-link navbar-text-white navLink">
+                Таблица элементов
               </NavLink>
             )}
           </Nav>

@@ -22,7 +22,7 @@ const ElementsPage: FC = () => {
     const decayInf = useDecayInf()
 
     const handleSearch = () => {
-        dispatch(getElementsWithSearch())
+        dispatch(getElementsWithSearch(atomicMass))
     }
 
     useEffect(() => {
