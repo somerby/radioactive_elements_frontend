@@ -28,8 +28,12 @@ const DecayPage: FC = () => {
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault()
         saveFields()
-        dispatch(formDecay(decay.decay_id!))
-        navigate(ROUTES.ELEMENTS)
+        setTimeout(() => {
+            dispatch(formDecay(decay.decay_id!))
+        }, 500)
+        setTimeout(() => {
+            navigate(ROUTES.ELEMENTS)
+        }, 500)
     }
 
     const handleDelete = async () => {

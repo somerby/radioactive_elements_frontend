@@ -1,9 +1,9 @@
 import React, { FC, FormEvent, useEffect, useState } from "react";
-import { Button, Col, Container, Dropdown, Form, Image, Row, Spinner } from "react-bootstrap";
+import { Button, Col, Container, Dropdown, Form, Image, Row, Spinner, Table } from "react-bootstrap";
 import BreadCrumbs from "../../components/BreadCrumbs/BreadCrumbs";
 import { ROUTE_LABELS, ROUTES } from "../../Routes";
 import { useNavigate, useParams } from "react-router-dom";
-import { editElement, getElementWithId, saveElementImage, setElementAtomicMassAction, setElementDescriptionAction, setElementInitialStateAction, setElementNameAction, setElementPeriodTimeAction, setElementPeriodTimeTextAction, setElementStatusAction, useElement, useElementLoading, createElement } from "../../slices/elementSlice";
+import { editElement, getElementWithId, saveElementImage, setElementAtomicMassAction, setElementDescriptionAction, setElementInitialStateAction, setElementNameAction, setElementPeriodTimeAction, setElementPeriodTimeTextAction, setElementStatusAction, useElement, useElementLoading, createElement, setElementAttributeValueAction, editElementAttribute, deleteElementAttribute, useElementAttributeName, useElementAttributeValue, setElementAttributeAddNameAction, addElementAttribute, setElementAttributeAddValueAction } from "../../slices/elementSlice";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../store";
 import defaultImg from '/default.jpg'
@@ -16,12 +16,13 @@ const AddEditElementPage: FC = () => {
     const dispatch = useDispatch<AppDispatch>()
     const loading = useElementLoading()
     const element = useElement()
+    const attributeName = useElementAttributeName()
+    const attributeValue = useElementAttributeValue()
     const isModerator = useIsModerator()
     const [selectedImage, setSelectedImage] = useState<File | null>(null)
     const [previewImageUrl, setPreviewImageUrl] = useState<string>('')
 
     useEffect(() => {
-        console.log(isModerator)
         if (!isModerator) {
             navigate(ROUTES.FORBIDDEN)
         }
@@ -66,6 +67,23 @@ const AddEditElementPage: FC = () => {
         setPreviewImageUrl(URL.createObjectURL(file))
     }
 
+    const handleAttributeUpdate = (attributeId: number) => {
+        dispatch(editElementAttribute({elementId: element.element_id!, attributeId}))
+    }
+
+    const handleAttributeDelete = (attributeId: number) => {
+        dispatch(deleteElementAttribute({elementId: element.element_id!, attributeId: attributeId}))
+    }
+
+    const handleAttributeAdd = (event: FormEvent) => {
+        event.preventDefault()
+        if (!attributeName) {
+            alert('Введите название атрибута')
+            return
+        }
+        dispatch(addElementAttribute(element.element_id?.toString()!))
+    }
+
     return (
         <Container className="w-100 rootContainer">
             {elementId ? (
@@ -81,7 +99,7 @@ const AddEditElementPage: FC = () => {
                 </div>
             ) : (
             <Row className="w-100">
-                <Col md={6} xs={12} className="mx-auto">
+                <Col lg={6} md={8} xs={12} className="mx-auto">
                     <Form onSubmit={handleSubmit} className="w-100">
                         {elementId &&
                         <>
@@ -92,22 +110,22 @@ const AddEditElementPage: FC = () => {
                             <Form.Control type="file"
                                         accept="image/*"
                                         onChange={handleUpload}
-                                        className="editFileInput"/>
+                                        className="editFileInput border-dark"/>
                         </>}
                         <Form.Label className="editFormLabel mt-3">Название:</Form.Label>
                         <Form.Control value={element.name}
                                       onChange={(e) => dispatch(setElementNameAction(e.target.value))}
-                                      className="w-100 editFormInput"
+                                      className="w-100 editFormInput border-dark"
                                       required/>
                         <Form.Label className="editFormLabel mt-3">Атомная масса:</Form.Label>
                         <Form.Control value={element.atomic_mass}
                                       onChange={(e) => dispatch(setElementAtomicMassAction(e.target.value))}
-                                      className="w-100 editFormInput"
+                                      className="w-100 editFormInput border-dark"
                                       required/>
                         <Form.Label className="editFormLabel mt-3">Описание:</Form.Label>
                         <Form.Control value={element.description}
                                       onChange={(e) => dispatch(setElementDescriptionAction(e.target.value))}
-                                      className="w-100 editDescription editFormInput"
+                                      className="w-100 editDescription editFormInput border-dark"
                                       as={'textarea'}
                                       required/>
                         <Form.Label className="editFormLabel mt-3">Статус:</Form.Label>
@@ -123,19 +141,66 @@ const AddEditElementPage: FC = () => {
                         <Form.Label className="editFormLabel mt-3">Период полураспада (то, что видно на экране):</Form.Label>
                         <Form.Control value={element.period_time_text}
                                       onChange={(e) => dispatch(setElementPeriodTimeTextAction(e.target.value))}
-                                      className="w-100 editFormInput"
+                                      className="w-100 editFormInput border-dark"
                                       required/>
                         <Form.Label className="editFormLabel mt-3">Период полураспада в секундах:</Form.Label>
                         <Form.Control value={element.period_time}
                                       onChange={(e) => dispatch(setElementPeriodTimeAction(e.target.value))}
-                                      className="w-100 editFormInput"
+                                      className="w-100 editFormInput border-dark"
                                       required/>
-                        <div className="w-100 d-flex align-items-center">
-                            <Button variant="success" type="submit" className="mx-auto editSubmitButton mt-3">Сохранить</Button>
+                        {elementId ? ( <>
+                        {element.attributes?.length !== 0 && (
+                        <>
+                            <Form.Label className="editFormLabel mt-3">Атрибуты:</Form.Label>
+                            <Table className="border-dark elementAddEditAttributes">
+                                <tbody>
+                                    {element.attributes?.map((item, index) => {
+                                        return (
+                                            <tr>
+                                                <td>{item.attribute?.name}</td>
+                                                <td><Form.Control value={item.value!}
+                                                                onChange={(e) => dispatch(setElementAttributeValueAction({attribute_id: item.attribute?.attribute_id, 
+                                                                                                                            value: e.target.value}))}
+                                                                className="border-dark w-100"/>
+                                                </td>
+                                                <td><Button variant="success" 
+                                                            className="elementAddEditAttributesButton" 
+                                                            onClick={() => handleAttributeUpdate(item.attribute?.attribute_id!)}>
+                                                        Сохранить
+                                                    </Button>
+                                                </td>
+                                                <td><Button variant="danger" 
+                                                            className="elementAddEditAttributesButton" 
+                                                            onClick={() => handleAttributeDelete(item.attribute?.attribute_id!)}>
+                                                        Удалить
+                                                    </Button>
+                                                    </td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </Table>
+                        </>
+                        )}
+                        <Form.Label className={element.attributes?.length === 0 ? "editFormLabel mt-3" : "editFormLabel"}>Добавление атрибута:</Form.Label>
+                        <div className="d-flex flex-row">
+                            <Form.Control value={attributeName!}
+                                        onChange={(e) => dispatch(setElementAttributeAddNameAction(e.target.value))}
+                                        placeholder="Название"
+                                        className="elementAttributeNameValue border-dark"/>
+                            <Form.Control value={attributeValue!}
+                                        onChange={(e) => dispatch(setElementAttributeAddValueAction(e.target.value))}
+                                        placeholder="Значение"
+                                        className="elementAttributeNameValue border-dark"/>
+                            <Button variant="outline-dark" type="button" onClick={handleAttributeAdd}>Добавить</Button>
+                        </div>
+                        </>) : (<></>)}
+                        <div className="w-100 d-flex align-items-center mt-3">
+                            <Button variant="success" type="submit" className="mx-auto editSubmitButton">Сохранить</Button>
                         </div>
                     </Form>
                 </Col>
-                </Row>
+            </Row>
             )} 
         </Container>
     )

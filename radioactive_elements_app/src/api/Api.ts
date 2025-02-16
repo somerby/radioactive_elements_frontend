@@ -9,6 +9,30 @@
  * ---------------------------------------------------------------
  */
 
+export interface Attribute {
+  /** Attribute id */
+  attribute_id?: number;
+  /**
+   * Name
+   * @minLength 1
+   * @maxLength 30
+   */
+  name: string;
+}
+
+export interface AttributeElement {
+  attribute?: Attribute;
+  /**
+   * Value
+   * @maxLength 30
+   */
+  value?: string | null;
+}
+
+export interface ElementForAttributes {
+  attributes?: AttributeElement[];
+}
+
 export interface ElementForDecay {
   /** Element id */
   element_id?: number;
@@ -306,6 +330,103 @@ export class HttpClient<SecurityDataType = unknown> {
  * My description
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  attribute = {
+    /**
+     * No description
+     *
+     * @tags attribute
+     * @name AttributeRead
+     * @request GET:/attribute/{element_id}/
+     * @secure
+     */
+    attributeRead: (elementId: string, params: RequestParams = {}) =>
+      this.request<ElementForAttributes, any>({
+        path: `/attribute/${elementId}/`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags attribute
+     * @name AttributeCreate
+     * @request POST:/attribute/{element_id}/
+     * @secure
+     */
+    attributeCreate: (
+      elementId: string,
+      data: {
+        name: string;
+        value?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<AttributeElement, any>({
+        path: `/attribute/${elementId}/`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags attribute
+     * @name AttributeUpdate
+     * @request PUT:/attribute/{element_id}/{attribute_id}/
+     * @secure
+     */
+    attributeUpdate: (
+      elementId: string,
+      attributeId: string,
+      data: {
+        value?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          status: string;
+        },
+        any
+      >({
+        path: `/attribute/${elementId}/${attributeId}/`,
+        method: "PUT",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags attribute
+     * @name AttributeDelete
+     * @request DELETE:/attribute/{element_id}/{attribute_id}/
+     * @secure
+     */
+    attributeDelete: (elementId: string, attributeId: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          id?: number;
+        },
+        any
+      >({
+        path: `/attribute/${elementId}/${attributeId}/`,
+        method: "DELETE",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+  };
   decay = {
     /**
      * No description

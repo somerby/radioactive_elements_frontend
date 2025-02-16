@@ -1,6 +1,8 @@
 import { FC, useEffect, useState } from "react"
 import { Button, Container, Form, Row, Spinner, Table, Dropdown } from "react-bootstrap"
-import { getDecays, resetFiltersAction, setFilterEndDateAction, setFilterStartDateAction, setFilterStatusAction, useDecays, useDecaysLoading, useEndDate, useStartDate, useStatus, useDecaysEmail, setDecaysEmailAction } from "../../slices/decaysSlice"
+import { getDecays, resetFiltersAction, setFilterEndDateAction, setFilterStartDateAction, 
+         setFilterStatusAction, useDecays, useEndDate, useStartDate, useStatus, useDecaysEmail, 
+         setDecaysEmailAction } from "../../slices/decaysSlice"
 import BreadCrumbs from "../../components/BreadCrumbs/BreadCrumbs"
 import { ROUTES, ROUTE_LABELS } from "../../Routes"
 import { useDispatch } from "react-redux"
@@ -39,7 +41,7 @@ const DecaysPage: FC = () => {
         fetchDecays()
         const id = setInterval(fetchDecays, 1000)
         return () => clearInterval(id)
-    }, [status, startDate, endDate])
+    }, [isModerator, status, startDate, endDate])
 
     const fetchDecays = async () => {
         await dispatch(getDecays({status: statusFormat(status), start_date: startDate, end_date: endDate}))
@@ -162,9 +164,12 @@ const DecaysPage: FC = () => {
                                 <td>
                                     {item.status === 'Завершен' && (
                                         <>
-                                            <div className={index >= decays.length - 3 ? "qr-hover-wrapper isBottom" : "qr-hover-wrapper isTop"}>
+                                            <div className="qr-hover-wrapper">
                                                 <img src={href} className="decaysIcon status-icon" style={{cursor: 'pointer'}}/>
-                                                <div className={index >= decays.length - 3 ? "qr-hover isBottom" : "qr-hover isTop"}>
+                                                <div className={decays.filter((el) => el.creator?.toLowerCase().includes(email.toLowerCase())).length >= 4 
+                                                                ? (index >= decays.filter((el) => el.creator?.toLowerCase().includes(email.toLowerCase())).length - 3 
+                                                                ? "qr-hover isBottom" : "qr-hover isTop") 
+                                                                : "qr-hover isTop"}>
                                                     {item.qr && <img className="qr-code" src={`data:image/png;base64,${item.qr}`} />}
                                                 </div>
                                             </div>

@@ -1,6 +1,7 @@
 .tableStyle {
     font-family: 'Oswald', sans-serif;
     font-size: 18px;
+    min-height: 400px;
 }
 
 .filtersDate {
